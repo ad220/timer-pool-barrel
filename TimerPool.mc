@@ -2,21 +2,35 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.Timer;
 
-
+(:datafield :timerapp)
 module TimerPool {
 
 class Controller {
-
+    
+    (:initialized :timerapp)
     private var timer as Timer.Timer;
+
+    (:initialized)
     private var period as Number;
     private var isRunning as Boolean;
     private var callbackList as Array<Callback>;
 
     public function initialize(periodInMs as Number) {
-        self.timer = new Timer.Timer();
-        self.period = periodInMs;
         self.callbackList = [];
         self.isRunning = false;
+        initTimer(periodInMs);
+    }
+
+    (:inline :timerapp)
+    public function initTimer(periodInMs as Number) as Void {
+        timer = new Timer.Timer();
+        period = periodInMs;
+    }
+
+    (:inline :datafield)
+    public function initTimer(periodInMs as Number) {
+        period = 1000;
+        isRunning = true;
     }
 
     public function triggerCallbacks() as Void {
@@ -50,17 +64,23 @@ class Controller {
         }
     }
 
-    (:inline)
+    (:inline :timerapp)
     public function pause() as Void {
         timer.stop();
         isRunning = false;
     }
 
-    (:inline)
+    (:inline :datafield)
+    public function pause() as Void {}
+
+    (:inline :timerapp)
     public function resume() as Void {
         timer.start(method(:triggerCallbacks), period, true);
         isRunning = true;
     }
+
+    (:inline :datafield)
+    public function resume() as Void {}
 
     public function getPeriod() as Number {
         return period;
